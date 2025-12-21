@@ -14,13 +14,31 @@ namespace TechHaven.UnitTests.Common;
 public abstract class UnitTestBase
 {
     protected readonly Mock<IUnitOfWork> MockUow;
+
+    // Mock các Repository con
+    protected readonly Mock<IOrderRepository> MockOrderRepo;
+    protected readonly Mock<IProductRepository> MockProductRepo;
+    protected readonly Mock<ICustomerRepository> MockCustomerRepo;
+    protected readonly Mock<IUserRepository> MockUserRepo;
+
     protected readonly IMapper Mapper;
     protected readonly CancellationToken CancellationToken;
 
     protected UnitTestBase()
     {
+        MockOrderRepo = new Mock<IOrderRepository>();
+        MockProductRepo = new Mock<IProductRepository>();
+        MockCustomerRepo = new Mock<ICustomerRepository>();
+        MockUserRepo = new Mock<IUserRepository>();
+
         // 1. Setup Mock Unit of Work
         MockUow = new Mock<IUnitOfWork>();
+
+        // Setup để khi gọi uow.Orders thì trả về Mock tương ứng
+        MockUow.Setup(u => u.Orders).Returns(MockOrderRepo.Object);
+        MockUow.Setup(u => u.Products).Returns(MockProductRepo.Object);
+        MockUow.Setup(u => u.Customers).Returns(MockCustomerRepo.Object);
+        MockUow.Setup(u => u.Users).Returns(MockUserRepo.Object);
 
         // 2. Setup Real AutoMapper (nên dùng mapper thật thay vì mock)
         var configuration = new MapperConfiguration(cfg =>
