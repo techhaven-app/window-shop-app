@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿        // ...existing code...
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
@@ -20,8 +21,34 @@ using WinRT.Interop;
 
 namespace TechHaven.Presentation.WinUI.Views
 {
-    public sealed partial class ProductPage : Page
-    {
+        public sealed partial class ProductPage : Page
+        {
+            // =====================
+            // DIALOG HELPER METHODS
+            // =====================
+            private async Task ShowErrorDialogAsync(string title, string content)
+            {
+                var dlg = new ContentDialog
+                {
+                    Title = title,
+                    Content = content,
+                    CloseButtonText = "Đóng",
+                    XamlRoot = this.Content.XamlRoot
+                };
+                await dlg.ShowAsync();
+            }
+
+            private async Task ShowSuccessDialogAsync(string title, string content)
+            {
+                var dlg = new ContentDialog
+                {
+                    Title = title,
+                    Content = content,
+                    CloseButtonText = "Đóng",
+                    XamlRoot = this.Content.XamlRoot
+                };
+                await dlg.ShowAsync();
+            }
         public ProductViewModel ViewModel { get; }
 
         public ProductPage()
@@ -46,11 +73,16 @@ namespace TechHaven.Presentation.WinUI.Views
         {
             base.OnNavigatedTo(e);
 
+
+            // Không swallow lỗi, log nếu có lỗi khi lấy PageSize
             try
             {
                 ViewModel.PageSize = AppState.PageSize;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[OnNavigatedTo] Lỗi lấy PageSize: {ex.Message}");
+            }
 
             if (ViewModel.Products.Count == 0)
             {
@@ -91,57 +123,64 @@ namespace TechHaven.Presentation.WinUI.Views
             // 3. Xử lý sự kiện khi bấm nút LƯU
             dialog.PrimaryButtonClick += async (s, args) =>
             {
-                // Lấy dữ liệu từ form (đã validate bên trong UserControl)
                 var resultDto = productForm.GetFormData();
-
-
                 if (resultDto == null)
                 {
-                    // Validate thất bại (UserControl đã hiện chữ đỏ) -> Giữ Dialog mở
                     args.Cancel = true;
                 }
                 else
                 {
-
-                    // Dữ liệu OK -> Gọi ViewModel xử lý
                     if (itemForEdit == null)
                     {
-                        
-
-                        // Chế độ THÊM
                         await ViewModel.CreateProductAsync(resultDto);
                     }
                     else
                     {
-                        // 1. Lấy link ảnh gốc từ UserControl (Property bạn vừa tạo ở bước trước)
                         string? oldImage = productForm.OriginalImageUrl;
                         string? newImage = resultDto.ImageUrl;
-
-  
-
-                        // 2. So sánh: Nếu có ảnh cũ VÀ ảnh mới khác ảnh cũ -> Xóa ảnh cũ trên server
                         if (!string.IsNullOrEmpty(oldImage) && oldImage != newImage)
                         {
                             try
                             {
-                                // Khởi tạo Service để gọi API Delete (giống cách làm trong UserControl)
-                                var service = new HttpProductService(ApiClientFactory.GetHttpClient());
-                                await service.DeleteImageAsync(oldImage);
+                                await ViewModel.DeleteImageAsync(oldImage);
                             }
                             catch (Exception ex)
                             {
-                                // Log lỗi nếu cần, nhưng không chặn luồng update
                                 System.Diagnostics.Debug.WriteLine($"Lỗi xóa ảnh cũ: {ex.Message}");
                             }
                         }
-                        // Chế độ SỬA
                         await ViewModel.UpdateProductAsync(itemForEdit.Product.ProductId, resultDto);
                     }
                 }
             };
 
-            // 4. Hiển thị Dialog
-            await dialog.ShowAsync();
+            // 4. Hiển thị Dialog và xử lý nút HỦY => lưu draft
+            var result = await dialog.ShowAsync();
+
+            // If user clicked Close/Cancel (result == None), save as draft
+            if (result == ContentDialogResult.None)
+            {
+                try
+                {
+                    var draftDto = productForm.GetFormData();
+                    if (draftDto != null)
+                    {
+                        draftDto.IsDraft = true;
+                        if (itemForEdit == null)
+                        {
+                            await ViewModel.CreateProductAsync(draftDto);
+                        }
+                        else
+                        {
+                            await ViewModel.UpdateProductAsync(itemForEdit.Product.ProductId, draftDto);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await ShowErrorDialogAsync("Lỗi lưu nháp", ex.Message);
+                }
+            }
         }
 
         // -------------------------------------------------------------------
@@ -204,8 +243,7 @@ namespace TechHaven.Presentation.WinUI.Views
 
                 if (string.IsNullOrWhiteSpace(text))
                 {
-                    var dlgEmpty = new ContentDialog { Title = "File trống", Content = "File bạn chọn rỗng.", CloseButtonText = "Đóng", XamlRoot = this.Content.XamlRoot };
-                    await dlgEmpty.ShowAsync();
+                    await ShowErrorDialogAsync("File trống", "File bạn chọn rỗng.");
                     return;
                 }
 
@@ -215,8 +253,7 @@ namespace TechHaven.Presentation.WinUI.Views
                                 .ToArray();
                 if (lines.Length < 2)
                 {
-                    var dlg = new ContentDialog { Title = "Dữ liệu không hợp lệ", Content = "CSV cần có header và ít nhất 1 dòng dữ liệu.", CloseButtonText = "Đóng", XamlRoot = this.Content.XamlRoot };
-                    await dlg.ShowAsync();
+                    await ShowErrorDialogAsync("Dữ liệu không hợp lệ", "CSV cần có header và ít nhất 1 dòng dữ liệu.");
                     return;
                 }
 
@@ -269,29 +306,23 @@ namespace TechHaven.Presentation.WinUI.Views
 
                 if (!products.Any())
                 {
-                    var dlgNoValid = new ContentDialog { Title = "Không có sản phẩm hợp lệ", Content = "Không tìm thấy dòng hợp lệ trong file để import.", CloseButtonText = "Đóng", XamlRoot = this.Content.XamlRoot };
-                    await dlgNoValid.ShowAsync();
+                    await ShowErrorDialogAsync("Không có sản phẩm hợp lệ", "Không tìm thấy dòng hợp lệ trong file để import.");
                     return;
                 }
 
                 // Ask user about options (skipDuplicates / validateBeforeInsert)
-                // skipDuplicates = true: Skip duplicate products (no error), false: return errors for duplicates
-                // validateBeforeInsert = true: Validate all first (atomic), false: insert valid ones, skip invalid
-                var skipDuplicates = true;
-                var validateBeforeInsert = false; // Allow partial import
-
                 var payload = new ProductBulkCreateRequestDto
                 {
                     Products = products,
-                    SkipDuplicates = skipDuplicates,
-                    ValidateBeforeInsert = validateBeforeInsert
+                    SkipDuplicates = true,
+                    ValidateBeforeInsert = false
                 };
 
                 // Debug: In ra request trước khi gửi
                 System.Diagnostics.Debug.WriteLine("=== BULK IMPORT REQUEST ===");
                 System.Diagnostics.Debug.WriteLine($"Total products to import: {products.Count}");
-                System.Diagnostics.Debug.WriteLine($"SkipDuplicates: {skipDuplicates}");
-                System.Diagnostics.Debug.WriteLine($"ValidateBeforeInsert: {validateBeforeInsert}");
+                System.Diagnostics.Debug.WriteLine($"SkipDuplicates: true");
+                System.Diagnostics.Debug.WriteLine($"ValidateBeforeInsert: false");
                 System.Diagnostics.Debug.WriteLine("\nProducts (detailed):");
                 for (int i = 0; i < Math.Min(5, products.Count); i++)
                 {
@@ -325,8 +356,7 @@ namespace TechHaven.Presentation.WinUI.Views
                 if (!resp.IsSuccessStatusCode)
                 {
                     var body = await resp.Content.ReadAsStringAsync();
-                    var dlgFail = new ContentDialog { Title = "Import thất bại", Content = $"Server returned {(int)resp.StatusCode}: {body}", CloseButtonText = "Đóng", XamlRoot = this.Content.XamlRoot };
-                    await dlgFail.ShowAsync();
+                    await ShowErrorDialogAsync("Import thất bại", $"Server returned {(int)resp.StatusCode}: {body}");
                     return;
                 }
 
@@ -337,24 +367,53 @@ namespace TechHaven.Presentation.WinUI.Views
 
                     if (wrapper == null || wrapper.Data == null)
                     {
-                        var dlg = new ContentDialog { Title = "Lỗi", Content = "Không thể đọc phản hồi từ server", CloseButtonText = "Đóng", XamlRoot = this.Content.XamlRoot };
-                        await dlg.ShowAsync();
+                        await ShowErrorDialogAsync("Lỗi", "Không thể đọc phản hồi từ server");
                         return;
                     }
 
                     var data = wrapper.Data;
-                    var sb = new StringBuilder();
 
+                    // Build a clear, user-facing message
+                    string dialogContent;
+                    if (wrapper.Success)
+                    {
+                        if (data.SuccessCount > 0)
+                        {
+                            dialogContent = $"Đã import dữ liệu thành công ({data.SuccessCount}/{data.TotalProducts}).";
+                            if (data.FailedCount > 0)
+                            {
+                                dialogContent += $" Có {data.FailedCount} dòng không được import do lỗi.";
+                            }
+                        }
+                        else
+                        {
+                            dialogContent = "Import hoàn tất nhưng không có sản phẩm nào được thêm.";
+                            if (data.FailedCount > 0)
+                                dialogContent += $" Có {data.FailedCount} dòng lỗi.";
+                        }
+                    }
+                    else
+                    {
+                        // If server returned partial results with errors, show concise errors
+                        if (data.Errors != null && data.Errors.Any())
+                        {
+                            var firstErrors = data.Errors.Take(5)
+                                .SelectMany(e => e.ErrorMessages)
+                                .Take(10)
+                                .ToArray();
+                            var errorsText = string.Join("\n", firstErrors);
+                            dialogContent = $"Import có lỗi. Hiển thị một vài lỗi:\n{errorsText}";
+                            if (data.Errors.Sum(e => e.ErrorMessages.Count) > firstErrors.Length)
+                                dialogContent += "\n...";
+                        }
+                        else
+                        {
+                            // fallback to wrapper message
+                            dialogContent = wrapper.Message ?? "Import không thành công.";
+                        }
+                    }
 
-
-                    var dlgOk = new ContentDialog 
-                    { 
-                        Title = wrapper.Success ? "Import hoàn tất" : "Import có lỗi", 
-                        Content = sb.ToString(), 
-                        CloseButtonText = "Đóng", 
-                        XamlRoot = this.Content.XamlRoot 
-                    };
-                    await dlgOk.ShowAsync();
+                    await ShowSuccessDialogAsync(wrapper.Success ? "Import hoàn tất" : "Import có lỗi", dialogContent);
 
                     // Refresh products if at least some succeeded
                     if (data.SuccessCount > 0)
@@ -364,14 +423,12 @@ namespace TechHaven.Presentation.WinUI.Views
                 }
                 catch (Exception ex)
                 {
-                    var dlg = new ContentDialog { Title = "Lỗi parse response", Content = $"Không thể xử lý phản hồi: {ex.Message}", CloseButtonText = "Đóng", XamlRoot = this.Content.XamlRoot };
-                    await dlg.ShowAsync();
+                    await ShowErrorDialogAsync("Lỗi parse response", $"Không thể xử lý phản hồi: {ex.Message}");
                 }
             }
             catch (Exception ex)
             {
-                var dlg = new ContentDialog { Title = "Lỗi", Content = ex.Message, CloseButtonText = "Đóng", XamlRoot = this.Content.XamlRoot };
-                await dlg.ShowAsync();
+                await ShowErrorDialogAsync("Lỗi", ex.Message);
             }
         }
 
@@ -529,10 +586,28 @@ namespace TechHaven.Presentation.WinUI.Views
                     return;
                 }
 
+                // Check duplicate (case-insensitive) in current brand list
+                bool exists = ViewModel.BrandNameFilter
+                    .Where(b => !string.IsNullOrWhiteSpace(b) && b != "Không")
+                    .Any(b => string.Equals(b.Trim(), brandName, StringComparison.OrdinalIgnoreCase));
+
+                if (exists)
+                {
+                    var dupDialog = new ContentDialog
+                    {
+                        Title = "Trùng thương hiệu",
+                        Content = $"Thương hiệu '{brandName}' đã tồn tại.",
+                        CloseButtonText = "Đóng",
+                        XamlRoot = this.Content.XamlRoot
+                    };
+                    await dupDialog.ShowAsync();
+                    return;
+                }
+
                 // Tạo sản phẩm ảo với IsDraft = true
                 var draftProduct = new ProductUpsertRequest
                 {
-                    ProductName = $"_DRAFT_{brandName}_{DateTime.Now:yyyyMMddHHmmss}",
+                    ProductName = $"ma_product_{DateTime.Now:yyyyMMddHHmmss}",
                     BrandName = brandName,
                     SellPrice = 0,
                     CostPrice = 0,

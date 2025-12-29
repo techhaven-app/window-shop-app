@@ -9,10 +9,13 @@ namespace TechHaven.Presentation.WinUI.Helpers
 {
     public static class AppState
     {
-        private const string DefaultApiBaseUrl = "http://localhost:5207/";
+        private const string DefaultApiBaseUrl = "https://nphoang.me/";
 
         public static UserDto? CurrentUser { get; set; }
         public static bool IsLoggedIn => CurrentUser != null;
+
+        // Onboarding flag sourced from OTP verify response
+        public static bool HasSeenGuide { get; set; } = true;
 
         // Backing field for API base URI (kept for HttpClient default if needed)
         private static Uri _apiBaseUri = new(
@@ -23,8 +26,8 @@ namespace TechHaven.Presentation.WinUI.Helpers
         public static Uri ApiBaseUri => _apiBaseUri;
 
         // Flag to indicate whether user explicitly configured the API URL via Settings
-        // Default is false so login is blocked until user saves settings
-        public static bool IsApiConfigured { get; private set; } = false;
+        // Default is true now since we have a default production URL
+        public static bool IsApiConfigured { get; private set; } = true;
 
         public static void SetApiBaseUri(string? url)
         {

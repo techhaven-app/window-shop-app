@@ -27,6 +27,10 @@
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <TrimmerRootDescriptor Include="TrimmerRoots.xml" />
+  </ItemGroup>
+
   <!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -58,17 +62,26 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
+    <SelfContained Condition="'$(Configuration)' != 'Debug'">true</SelfContained>
+    <!-- Enable JSON reflection for System.Text.Json when trimming -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+    <!-- Preserve all assemblies to avoid trimming issues -->
+    <TrimMode>partial</TrimMode>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Controls\**" />
     <Compile Remove="Docs\**" />
     <Compile Remove="ViewModels\**" />
     <Compile Remove="Views\Order\**" />
+    <EmbeddedResource Remove="Controls\**" />
     <EmbeddedResource Remove="Docs\**" />
     <EmbeddedResource Remove="ViewModels\**" />
     <EmbeddedResource Remove="Views\Order\**" />
+    <None Remove="Controls\**" />
     <None Remove="Docs\**" />
     <None Remove="ViewModels\**" />
     <None Remove="Views\Order\**" />
+    <Page Remove="Controls\**" />
     <Page Remove="Docs\**" />
     <Page Remove="ViewModels\**" />
     <Page Remove="Views\Order\**" />
@@ -132,12 +145,6 @@
     <Page Update="Themes\MidnightTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Update="Views\AddCustomerDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-    <None Update="Views\CustomersPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
     <Page Update="Views\ProductEditDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -206,6 +213,13 @@
     <PRIResource Remove="Docs\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controls\" />
+    <Compile Include="Views\Order\CustomerSelectorDialog.cs" />
+    <Compile Include="Views\Order\OrderEditorDialog.cs" />
+    <Compile Include="Views\Order\OrderPageHelpers.cs" />
+    <Compile Include="Views\Order\ProductSelectorDialog.cs" />
+    <Compile Include="Views\Order\StatusUpdateDialog.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Remove="Controls\**" />
   </ItemGroup>
 </Project>
