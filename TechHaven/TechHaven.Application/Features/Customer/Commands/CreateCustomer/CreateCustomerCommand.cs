@@ -1,8 +1,10 @@
+﻿using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Interfaces;
-using TechHaven.Shared.DTOs.Customers;
 using TechHaven.Domain.Common;
+using TechHaven.Shared.DTOs.Customers;
 
 namespace TechHaven.Application.Features.Customer.Commands.CreateCustomer;
+[ExcludeFromCodeCoverage] //Đây chỉ là Command chứa dữ liệu - ko cần test file này
 
 public record CreateCustomerCommand() : ICommand<Result<CustomerDto>>
 {

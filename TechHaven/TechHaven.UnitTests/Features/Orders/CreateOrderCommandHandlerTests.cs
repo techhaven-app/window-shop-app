@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using FluentAssertions;
 using Moq;
+using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Features.Order.Commands.CreateOrder;
 using TechHaven.Domain.Common;
 using TechHaven.Domain.Entities;
@@ -11,6 +12,7 @@ using TechHaven.UnitTests.Common;
 using Xunit;
 
 namespace TechHaven.UnitTests.Features.Order;
+[ExcludeFromCodeCoverage] //Đây chỉ là file test - không cần test file này
 
 public class CreateOrderCommandHandlerTests : UnitTestBase
 {

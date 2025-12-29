@@ -1,15 +1,16 @@
 ﻿
 //Class cơ sở chứa Mock Setup
-using Moq;
 using AutoMapper;
-using TechHaven.Domain.Interfaces;
-using TechHaven.Application.Mappings; // Namespace chứa MappingProfile của bạn
-
 //Thêm vào để lấp đầy khoảng trống ở hàm constructor MapperConfiguration
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using System.Diagnostics.CodeAnalysis;
+using TechHaven.Application.Mappings; // Namespace chứa MappingProfile của bạn
+using TechHaven.Domain.Interfaces;
 
 namespace TechHaven.UnitTests.Common;
+[ExcludeFromCodeCoverage] //Đây chỉ là Mock Base - không cần test
 
 public abstract class UnitTestBase
 {

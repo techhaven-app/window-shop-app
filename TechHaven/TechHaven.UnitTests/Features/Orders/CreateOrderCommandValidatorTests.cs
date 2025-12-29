@@ -1,10 +1,12 @@
 ﻿using FluentValidation.TestHelper; // Cần package FluentValidation.AspNetCore hoặc FluentValidation.DependencyInjectionExtensions
+using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Features.Order.Commands.CreateOrder;
 using TechHaven.Domain.Enums;
 using TechHaven.Shared.DTOs.Orders;
 using Xunit;
 
 namespace TechHaven.UnitTests.Features.Order;
+[ExcludeFromCodeCoverage] //Đây chỉ là file test - không cần test file này
 
 public class CreateOrderCommandValidatorTests
 {

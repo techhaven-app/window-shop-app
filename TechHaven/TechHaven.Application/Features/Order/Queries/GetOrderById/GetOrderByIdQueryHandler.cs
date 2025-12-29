@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Interfaces;
 using TechHaven.Domain.Common;
 using TechHaven.Domain.Interfaces;
 using TechHaven.Shared.DTOs.Orders;
 
 namespace TechHaven.Application.Features.Order.Queries.GetOrderById;
+[ExcludeFromCodeCoverage] //Không nhất thiết test query, đối với test mapping từ Command -> Dto thì sẽ có test riêng
 
 public class GetOrderByIdQueryHandler : IQueryHandler<GetOrderByIdQuery, Result<OrderDto>>
 {

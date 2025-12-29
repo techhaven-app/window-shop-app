@@ -1,8 +1,10 @@
 ﻿using Bogus;
+using System.Diagnostics.CodeAnalysis;
 using TechHaven.Domain.Entities;
 using TechHaven.Domain.Enums;
 
 namespace TechHaven.UnitTests.Common;
+[ExcludeFromCodeCoverage] //Đây chỉ là File gen dữ liệu - không cần test
 
 public static class DataGenerator
 {
