@@ -8,7 +8,7 @@ using TechHaven.Shared.DTOs.Orders;
 using TechHaven.UnitTests.Common;
 using Xunit;
 
-namespace TechHaven.UnitTests.Features.Order;
+namespace TechHaven.UnitTests.Features.Orders;
 
 public class UpdateOrderCommandHandlerTests : UnitTestBase
 {

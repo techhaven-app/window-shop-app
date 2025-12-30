@@ -11,7 +11,7 @@ using TechHaven.Shared.DTOs.Orders;
 using TechHaven.UnitTests.Common;
 using Xunit;
 
-namespace TechHaven.UnitTests.Features.Order;
+namespace TechHaven.UnitTests.Features.Orders;
 [ExcludeFromCodeCoverage] //Đây chỉ là file test - không cần test file này
 
 public class CreateOrderCommandHandlerTests : UnitTestBase
