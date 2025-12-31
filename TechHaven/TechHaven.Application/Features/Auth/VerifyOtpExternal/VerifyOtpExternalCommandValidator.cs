@@ -1,7 +1,8 @@
-using FluentValidation;
+﻿using FluentValidation;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TechHaven.Application.Features.Auth.VerifyOtpExternal;
-
+[ExcludeFromCodeCoverage] // Đã được test ở VerifyOtpCommandValidator.cs rồi nên không cần test lại logic này
 public class VerifyOtpExternalCommandValidator : AbstractValidator<VerifyOtpExternalCommand>
 {
   public VerifyOtpExternalCommandValidator()

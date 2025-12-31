@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
+using TechHaven.Application.Interfaces;
 using TechHaven.Application.Mappings; // Namespace chứa MappingProfile của bạn
 using TechHaven.Domain.Interfaces;
 
@@ -22,6 +23,16 @@ public abstract class UnitTestBase
     protected readonly Mock<ICustomerRepository> MockCustomerRepo;
     protected readonly Mock<IUserRepository> MockUserRepo;
 
+
+    // Auth & Common Services Mocks
+    protected readonly Mock<IPasswordHasher> MockHasher;
+    protected readonly Mock<IOtpService> MockOtpService;
+    protected readonly Mock<IEmailService> MockEmailService;
+    protected readonly Mock<IJwtTokenService> MockJwtTokenService;
+    // External Auth Services Mocks
+    protected readonly Mock<IExternalAuthService> MockExternalAuthService;
+    protected readonly Mock<IStringEncryptionHelper> MockEncryptionHelper;
+
     protected readonly IMapper Mapper;
     protected readonly CancellationToken CancellationToken;
 
@@ -31,6 +42,14 @@ public abstract class UnitTestBase
         MockProductRepo = new Mock<IProductRepository>();
         MockCustomerRepo = new Mock<ICustomerRepository>();
         MockUserRepo = new Mock<IUserRepository>();
+        // Init Auth & Common Services Mocks
+        MockHasher = new Mock<IPasswordHasher>();
+        MockOtpService = new Mock<IOtpService>();
+        MockEmailService = new Mock<IEmailService>();
+        MockJwtTokenService = new Mock<IJwtTokenService>();
+        // Init External Auth Services Mocks
+        MockExternalAuthService = new Mock<IExternalAuthService>();
+        MockEncryptionHelper = new Mock<IStringEncryptionHelper>();
 
         // 1. Setup Mock Unit of Work
         MockUow = new Mock<IUnitOfWork>();

@@ -1,8 +1,9 @@
+﻿using FluentValidation;
 using System.Data;
-using FluentValidation;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TechHaven.Application.Features.Auth.LoginExternal;
-
+[ExcludeFromCodeCoverage] // Đã test ở file LoginCommandValidator.cs rồi - giống logic nhau
 public class LoginExternalCommandValidator : AbstractValidator<LoginExternalCommand>
 {
   public LoginExternalCommandValidator()
