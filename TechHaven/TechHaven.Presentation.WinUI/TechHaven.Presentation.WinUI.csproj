@@ -38,6 +38,10 @@
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <TrimmerRootDescriptor Include="TrimmerRoots.xml" />
+  </ItemGroup>
+
   <!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -69,17 +73,22 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">False</PublishReadyToRun>  <!-- trạng thái ban đầu là True-->
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>  <!-- trạng thái ban đầu là True-->
-  </PropertyGroup>
+    <SelfContained Condition="'$(Configuration)' != 'Debug'">true</SelfContained>
+	</PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Controls\**" />
     <Compile Remove="Docs\**" />
     <Compile Remove="ViewModels\**" />
     <Compile Remove="Views\Order\**" />
+    <EmbeddedResource Remove="Controls\**" />
     <EmbeddedResource Remove="Docs\**" />
     <EmbeddedResource Remove="ViewModels\**" />
     <EmbeddedResource Remove="Views\Order\**" />
+    <None Remove="Controls\**" />
     <None Remove="Docs\**" />
     <None Remove="ViewModels\**" />
     <None Remove="Views\Order\**" />
+    <Page Remove="Controls\**" />
     <Page Remove="Docs\**" />
     <Page Remove="ViewModels\**" />
     <Page Remove="Views\Order\**" />
@@ -143,12 +152,6 @@
     <Page Update="Themes\MidnightTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Update="Views\AddCustomerDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-    <None Update="Views\CustomersPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
     <Page Update="Views\ProductEditDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -224,6 +227,9 @@
     <Compile Include="Views\Order\StatusUpdateDialog.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controls\" />
+    <PRIResource Remove="Controls\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Examples\" />
   </ItemGroup>
 </Project>

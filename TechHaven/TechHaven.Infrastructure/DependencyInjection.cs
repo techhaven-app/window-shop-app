@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +14,7 @@ using TechHaven.Infrastructure.Authorization;
 using TechHaven.Infrastructure.Authorization.Handlers;
 using Microsoft.AspNetCore.Authorization;
 using TechHaven.Infrastructure.Services.AI;
+using TechHaven.Infrastructure.Services.Email;
 
 namespace TechHaven.Infrastructure;
 
@@ -33,6 +34,13 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // 1. Đăng ký TenantService (QUAN TRỌNG: Đặt trước AddDbContext)
+        // Tại sao Scoped? Vì mỗi request HTTP cần một connection string riêng biệt
+        services.AddScoped<ITenantService, TenantService>();
+        // Đăng ký ExternalAuthService - Dynamic Db connection string
+        services.AddScoped<IExternalAuthService, ExternalAuthService>();
+
+        //2. Cấu hình DbContext
         services.AddDbContext<AppDbContext>(options =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection")
@@ -90,8 +98,26 @@ public static class DependencyInjection
         // ============================================
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IOtpService, OtpService>();
-        services.AddScoped<IEmailService, EmailService>();
+        // services.AddScoped<IEmailService, EmailService>();
+
+        // ============================================
+        // Configure Brevo Email Service
+        // ============================================
+        services.Configure<BrevoSettings>(options =>
+        {
+            options.ApiKey = Environment.GetEnvironmentVariable("BREVO_API_KEY") ?? "";
+            options.SenderEmail = Environment.GetEnvironmentVariable("BREVO_SENDER_EMAIL") ?? "";
+            options.SenderName = Environment.GetEnvironmentVariable("BREVO_SENDER_NAME") ?? "TechHaven";
+        });
+
+        services.Configure<SecuritySettings>(configuration.GetSection("SecuritySettings"));
+
+        // Register Brevo Email Service
+        services.AddScoped<IEmailService, BrevoEmailService>();
+
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        // Đăng ký Helper mã hóa chuỗi
+         services.AddScoped<IStringEncryptionHelper, StringEncryptionHelper>();
 
         // ============================================
         // 5. Memory Cache for OTP
@@ -185,7 +211,7 @@ public static class DependencyInjection
             configuration.GetSection("SmtpSettings"));
 
         // Register Email Service
-        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailService, BrevoEmailService>();
 
         // 7. Supabase Storage Configuration
         services.Configure<SupabaseSettings>(options =>
@@ -201,14 +227,14 @@ public static class DependencyInjection
         services.AddScoped<IImageUploadService, SupabaseImageUploadService>();
 
         // Configure Gemini
-        services.Configure<GeminiSettings>(configuration.GetSection("GeminiSettings"));
-        services.AddScoped<RAGService>();
-        services.AddScoped<IAIChatService, GeminiAIChatService>();
+        // services.Configure<GeminiSettings>(configuration.GetSection("GeminiSettings"));
+        // services.AddScoped<RAGService>();
+        // services.AddScoped<IAIChatService, GeminiAIChatService>();
 
         // // Configure OpenAI Settings
-        // services.Configure<OpenAISettings>(configuration.GetSection("OpenAISettings"));
-        // services.AddScoped<RAGService>();
-        // services.AddScoped<IAIChatService, OpenAIChatService>();
+        services.Configure<OpenAISettings>(configuration.GetSection("OpenAISettings"));
+        services.AddScoped<RAGService>();
+        services.AddScoped<IAIChatService, OpenAIChatService>();
 
         return services;
     }

@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <Obfuscator>
-    <Var name="InPath" value=".\TechHaven.Presentation.WinUI\bin\Release\net8.0-windows10.0.19041.0\win-x64" />
+    <Var name="InPath" value=".\TechHaven.Presentation.WinUI\bin\x64\Release\net8.0-windows10.0.19041.0\win-x64" />
     <Var name="OutPath" value=".\Obfuscated_WinUI" />
 
     <Var name="KeepPublicApi" value="true" />
