@@ -50,8 +50,10 @@ public class OrderSeeder
         }
 
         // Ensure we have required master data
+        // Filter out products with ProductName starting with "ma_product"
         var products = await _context.Products
             .AsNoTracking()
+            .Where(p => !p.ProductName.ToLower().StartsWith("ma_product"))
             .ToListAsync(cancellationToken);
 
         var users = await _context.Users
