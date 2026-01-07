@@ -58,10 +58,6 @@
 
   <!-- Publish Properties -->
   <PropertyGroup>
-    <!--Dương thêm win-x64-->
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-
     <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>

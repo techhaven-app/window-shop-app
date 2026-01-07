@@ -11,17 +11,20 @@
 
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Mappings\**" />
+	  <EmbeddedResource Remove="Mappings\**" />
+	  <None Remove="Mappings\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Remove="Features\Auth\General\RefreshTokenCommandHandlerTests.cs" />
 	  <Compile Remove="Features\Report\GetSalesTrend\GetSalesTrendQueryHandlerTest.cs" />
 	  <Compile Remove="Features\Report\GetSalesTrend\GetSalesTrendQueryValidatorTests.cs" />
 	</ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Mappings\" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="Features\Auth\General\RefreshTokenCommandHandlerTests.cs" />
