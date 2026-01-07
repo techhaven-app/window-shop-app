@@ -1,6 +1,7 @@
+﻿using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Interfaces;
 using TechHaven.Shared.DTOs.Auth;
 
 namespace TechHaven.Application.Features.Auth.ResendOtp;
-
+[ExcludeFromCodeCoverage] // Dùng để test riêng, không cần coverage
 public record ResendOtpCommand(string OtpSessionId): ICommand<OtpResendResponseDto>;

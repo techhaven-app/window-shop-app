@@ -1,11 +1,13 @@
+using AutoMapper;
+using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Interfaces;
+using TechHaven.Domain.Common;
+using TechHaven.Domain.Interfaces;
 using TechHaven.Shared.DTOs.Common;
 using TechHaven.Shared.DTOs.Products;
-using TechHaven.Domain.Interfaces;
-using AutoMapper;
-using TechHaven.Domain.Common;
 
 namespace TechHaven.Application.Features.Product.Queries.GetProducts;
+[ExcludeFromCodeCoverage] //Không nhất thiết test query, đối với test mapping từ Command -> Dto thì sẽ có test riêng
 
 public class GetProductsQueryHandler : IQueryHandler<GetProductsQuery, Result<PagingResponse<ProductDto>>>
 {

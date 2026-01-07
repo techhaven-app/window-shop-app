@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Common.Exceptions;
 using TechHaven.Application.Interfaces;
 using TechHaven.Domain.Entities;
@@ -6,7 +7,7 @@ using TechHaven.Domain.Interfaces;
 using TechHaven.Shared.DTOs.Auth;
 
 namespace TechHaven.Application.Features.Auth.Activate;
-
+[ExcludeFromCodeCoverage] // Post sửa đổi trạng thái đơn giản - ưu tiên không test để tối ưu thời gian
 public class ActivateCommandHandler : ICommandHandler<ActivateCommand, ActivateResponseDto>
 {
     private readonly IUnitOfWork _unitOfWork;

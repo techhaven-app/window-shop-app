@@ -1,9 +1,10 @@
+﻿using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Interfaces;
-using TechHaven.Shared.DTOs.Products;
 using TechHaven.Domain.Common;
+using TechHaven.Shared.DTOs.Products;
 
 namespace TechHaven.Application.Features.Product.Commands.UpdateProduct;
-
+[ExcludeFromCodeCoverage] // Loại biên lúc test vì chỉ có vai trò chứa dữ liệu
 public record UpdateProductCommand() : ICommand<Result<ProductDto>>
 {
   public int ProductId { get; init; }

@@ -1,7 +1,8 @@
-using FluentValidation;
+﻿using FluentValidation;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TechHaven.Application.Features.Auth.ResendOtpExternal;
-
+//[ExcludeFromCodeCoverage] // đã được test ở ResendOtpCommandValidator.cs
 public class ResendOtpExternalCommandValidator : AbstractValidator<ResendOtpExternalCommand>
 {
   public ResendOtpExternalCommandValidator()

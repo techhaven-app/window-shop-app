@@ -58,16 +58,22 @@
 
   <!-- Publish Properties -->
   <PropertyGroup>
+    <!--Dương thêm win-x64-->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+
     <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
     <SelfContained Condition="'$(Configuration)' != 'Debug'">true</SelfContained>
+    <WindowsAppSDKSelfContained Condition="'$(Configuration)' != 'Debug'">true</WindowsAppSDKSelfContained> <!-- Dương: Đã thêm WindowsAppSDKSelfContained -->
     <!-- Enable JSON reflection for System.Text.Json when trimming -->
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     <!-- Preserve all assemblies to avoid trimming issues -->
     <TrimMode>partial</TrimMode>
   </PropertyGroup>
+	
   <ItemGroup>
     <Compile Remove="Controls\**" />
     <Compile Remove="Docs\**" />

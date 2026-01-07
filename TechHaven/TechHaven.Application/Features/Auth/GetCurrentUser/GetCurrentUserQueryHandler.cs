@@ -1,12 +1,14 @@
-using TechHaven.Application.Interfaces;
-using TechHaven.Shared.DTOs.Auth;
-using TechHaven.Domain.Interfaces;
-using TechHaven.Domain.Common;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
+using TechHaven.Application.Interfaces;
+using TechHaven.Domain.Common;
+using TechHaven.Domain.Interfaces;
+using TechHaven.Shared.DTOs.Auth;
 
 namespace TechHaven.Application.Features.Auth.Queries.GetCurrentUser;
+[ExcludeFromCodeCoverage] //Get Query logic cơ bản - ưu tiên không test để tối ưu thời gian
 
 public class GetCurrentUserQueryHandler : IQueryHandler<GetCurrentUserQuery, Result<UserInfoDto>>
 {

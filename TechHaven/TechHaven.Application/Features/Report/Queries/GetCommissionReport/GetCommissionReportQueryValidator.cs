@@ -1,10 +1,12 @@
-using FluentValidation;
+﻿using FluentValidation;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TechHaven.Application.Features.Reports.Queries.GetCommissionReport;
 
-public class GetTopSellingProductsValidator : AbstractValidator<GetCommissionReportQuery>
+public class GetCommissionReportQueryValidator : AbstractValidator<GetCommissionReportQuery>
 {
-  public GetTopSellingProductsValidator()
+
+    public GetCommissionReportQueryValidator()
   {
     RuleFor(x => x.Month)
     .NotEmpty().WithMessage("Month is required")

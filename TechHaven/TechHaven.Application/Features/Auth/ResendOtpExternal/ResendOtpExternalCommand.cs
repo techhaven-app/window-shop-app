@@ -1,8 +1,9 @@
-﻿using TechHaven.Application.Interfaces;
+﻿using System.Diagnostics.CodeAnalysis;
+using TechHaven.Application.Interfaces;
 using TechHaven.Shared.DTOs.Auth;
 
 namespace TechHaven.Application.Features.Auth.ResendOtpExternal;
-
+[ExcludeFromCodeCoverage] // Dùng để test riêng, không cần coverage
 // Client phải gửi kèm Config mã hóa để server biết connect vào đâu
 public record ResendOtpExternalCommand(
     string OtpSessionId,

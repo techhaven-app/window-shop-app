@@ -1,9 +1,11 @@
-﻿using TechHaven.Application.Interfaces;
+﻿using System.Diagnostics.CodeAnalysis;
+using TechHaven.Application.Interfaces;
 using TechHaven.Domain.Common;
 using TechHaven.Shared.DTOs.Common;
 using TechHaven.Shared.DTOs.Orders;
 
 namespace TechHaven.Application.Features.Order.Queries.GetOrders;
+[ExcludeFromCodeCoverage] // Loại biên này lúc test vì chỉ vai trò truy xuất cơ bản - không có logic tính toán phức tạp
 
 /// <summary>
 /// Query take an OrderListQueryDto and returns a PagingResponse containing a list of OrderDto

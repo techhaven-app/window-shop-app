@@ -1,11 +1,13 @@
-﻿using TechHaven.Shared.DTOs.Orders;
+﻿using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Interfaces;
 using TechHaven.Domain.Common;
 using TechHaven.Domain.Enums;
+using TechHaven.Shared.DTOs.Orders;
 using OrderStatus = TechHaven.Domain.Enums.OrderStatus;
 
 namespace TechHaven.Application.Features.Order.Commands.CreateOrder
 {
+    [ExcludeFromCodeCoverage] // Loại biên lúc test vì chỉ có vai trò chứa dữ liệu
     public record class CreateOrderCommand : ICommand<Result<OrderDto>> //vì response là OrderDto nên sẽ lấy kiểu T làm chuẩn
     {
         public int OrderId { get; set; }

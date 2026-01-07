@@ -1,9 +1,11 @@
+﻿using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Interfaces;
 using TechHaven.Domain.Common;
 using TechHaven.Domain.Interfaces;
 using TechHaven.Shared.DTOs.Reports;
 
 namespace TechHaven.Application.Features.Reports.Queries.GetCommissionReport;
+
 
 public class GetCommissionReportQueryHandler
     : IQueryHandler<GetCommissionReportQuery, Result<List<CommissionReportDto>>>

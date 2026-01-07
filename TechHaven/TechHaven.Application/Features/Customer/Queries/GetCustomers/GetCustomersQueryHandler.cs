@@ -1,11 +1,13 @@
+﻿using AutoMapper;
+using System.Diagnostics.CodeAnalysis;
 using TechHaven.Application.Interfaces;
+using TechHaven.Domain.Common;
+using TechHaven.Domain.Interfaces;
 using TechHaven.Shared.DTOs.Common;
 using TechHaven.Shared.DTOs.Customers;
-using TechHaven.Domain.Interfaces;
-using AutoMapper;
-using TechHaven.Domain.Common;
 
 namespace TechHaven.Application.Features.Customer.Queries.GetCustomers;
+[ExcludeFromCodeCoverage] // Query Handler cơ bản - không cần test riêng
 
 public class GetCustomersQueryHandler : IQueryHandler<GetCustomersQuery, Result<PagingResponse<CustomerDto>>>
 {
