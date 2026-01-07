@@ -4,6 +4,8 @@ using TechHaven.Presentation.WinUI.Helpers;
 using TechHaven.Presentation.WinUI.Themes;
 using TechHaven.Presentation.WinUI.ViewModel;
 using TechHaven.Presentation.WinUI.Views;
+using System.Globalization;
+using Windows.Globalization;
 
 // QuestPDF license types
 using QuestPDF;
@@ -31,6 +33,55 @@ namespace TechHaven.Presentation.WinUI
         public App()
         {
             this.InitializeComponent();
+            
+            // Force Vietnamese culture for formatting and UI
+            try
+            {
+                var vi = new CultureInfo("vi-VN");
+                CultureInfo.DefaultThreadCurrentCulture = vi;
+                CultureInfo.DefaultThreadCurrentUICulture = vi;
+                ApplicationLanguages.PrimaryLanguageOverride = "vi-VN";
+            }
+            catch { }
+            
+            // Add global exception handler
+            this.UnhandledException += App_UnhandledException;
+        }
+
+        private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            // Log the exception
+            System.Diagnostics.Debug.WriteLine($"========== UNHANDLED EXCEPTION ==========");
+            System.Diagnostics.Debug.WriteLine($"Type: {e.Exception.GetType().Name}");
+            System.Diagnostics.Debug.WriteLine($"Message: {e.Message}");
+            System.Diagnostics.Debug.WriteLine($"Exception: {e.Exception}");
+            System.Diagnostics.Debug.WriteLine($"==========================================");
+            
+            // Check for specific known errors
+            if (e.Exception is ArgumentException argEx)
+            {
+                if (argEx.Message.Contains("ImageSource"))
+                {
+                    System.Diagnostics.Debug.WriteLine(">>> KNOWN ISSUE: ImageSource conversion error in LiveCharts/SkiaSharp");
+                    System.Diagnostics.Debug.WriteLine(">>> This is a WinUI + LiveCharts binding issue, marking as handled");
+                    
+                    // Always mark as handled to prevent crash
+                    e.Handled = true;
+                    return;
+                }
+                
+                // Other ArgumentExceptions - log and handle in DEBUG
+                System.Diagnostics.Debug.WriteLine($">>> ArgumentException detected: {argEx.Message}");
+                #if DEBUG
+                e.Handled = true;
+                #endif
+            }
+            
+            // For other exceptions in DEBUG, also handle to prevent crash
+            #if DEBUG
+            System.Diagnostics.Debug.WriteLine(">>> Marking as handled in DEBUG mode");
+            e.Handled = true;
+            #endif
         }
 
         /// <summary>

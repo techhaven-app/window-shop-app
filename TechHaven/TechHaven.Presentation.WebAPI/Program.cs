@@ -155,6 +155,10 @@ try
             var context = services.GetRequiredService<AppDbContext>();
             var logger = services.GetRequiredService<ILogger<Program>>();
             await DbInitializer.SeedAsync(context, logger);
+            // var productSeeder = services.GetRequiredService<CellphoneProductSeeder>();
+            // await productSeeder.SeedAsync();
+            var orderSeeder = services.GetRequiredService<OrderSeeder>();
+            await orderSeeder.SeedAsync();
             Log.Information("Database initialized successfully");
         }
         catch (Exception ex)
@@ -172,6 +176,8 @@ try
     app.UseAuthentication();
     // 2. [MỚI] Đăng ký TenantMiddleware: Middleware này phải chạy SAU Authentication (để đọc được context.User) nhưng TRƯỚC Controllers (để kịp đổi DB).
     app.UseMiddleware<TenantMiddleware>();
+    // 3. [MỚI] TrialBlockerMiddleware (Đặt sau Authentication để đọc được User)
+    app.UseMiddleware<TrialBlockerMiddleware>();
 
     app.UseAuthorization();
     app.MapControllers();

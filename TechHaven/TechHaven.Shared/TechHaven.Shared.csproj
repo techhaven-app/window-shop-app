@@ -4,7 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <!--<<<<<< HEAD
     <Platforms>AnyCPU;x64</Platforms>
+=======-->
+    <!-- Include common Windows runtime identifiers so restore creates net8.0/win-*- targets -->
+    <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
+
   </PropertyGroup>
 
 </Project>

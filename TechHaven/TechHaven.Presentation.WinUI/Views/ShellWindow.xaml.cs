@@ -114,13 +114,27 @@ namespace TechHaven.Presentation.WinUI.Views
                     }
                     else
                     {
-                        // Generate initials from full name
-                        var initials = GetInitials(userFullName);
-                        avatarInitials.Text = initials ?? "?";
+                        try
+                        {
+                            // Generate initials from full name
+                            var initials = GetInitials(userFullName);
+                            avatarInitials.Text = initials ?? "?";
 
-                        // Choose a deterministic background color based on username hash
-                        var color = ColorFromString(AppState.CurrentUser.UserName ?? userFullName);
-                        avatarEllipse.Fill = new SolidColorBrush(color);
+                            // Choose a deterministic background color based on username hash
+                            var color = ColorFromString(AppState.CurrentUser.UserName ?? userFullName);
+                            avatarEllipse.Fill = new SolidColorBrush(color);
+                        }
+                        catch (Exception exAvatar)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"ShellWindow: avatar setup error: {exAvatar}");
+                            // Set fallback values
+                            try
+                            {
+                                avatarInitials.Text = "?";
+                                avatarEllipse.Fill = new SolidColorBrush(Colors.Gray);
+                            }
+                            catch { }
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -133,10 +147,8 @@ namespace TechHaven.Presentation.WinUI.Views
             InitializeChatBot();
 
             // Initialize settings and navigate to last visited page (or dashboard)
-            _ = InitializeSettingsAndNavigateAsync();
-
-            // Show onboarding if needed
-            _ = ShowOnboardingIfNeededAsync();
+            // Then show onboarding if needed, then check trial
+            _ = InitializeAsync();
         }
 
         public void NavigateTo(Type pageType)
@@ -182,6 +194,18 @@ namespace TechHaven.Presentation.WinUI.Views
             }
         }
 
+        private async Task InitializeAsync()
+        {
+            // First: initialize settings and navigate
+            await InitializeSettingsAndNavigateAsync();
+            
+            // Second: show onboarding if user hasn't seen it yet
+            await ShowOnboardingIfNeededAsync();
+            
+            // Third: check trial mode (this may block UI if expired)
+            await CheckTrialAsync();
+        }
+
         private async Task InitializeSettingsAndNavigateAsync()
         {
             try
@@ -221,9 +245,6 @@ namespace TechHaven.Presentation.WinUI.Views
 
                 // Navigate frame
                 contentFrame.Navigate(pageType);
-
-                // After navigation, check trial status
-                _ = CheckTrialAsync();
             }
             catch
             {
